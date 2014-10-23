@@ -21,9 +21,13 @@ This docker image (Dockerfile) uses [nginx](http://nginx.org/) as reverse proxy 
 
 1. Install [Docker](https://www.docker.com/).
 
-2. Download [automated build](https://registry.hub.docker.com/u/darkgaro/kubernetes-reverseproxy/) from public [Docker Hub Registry](https://registry.hub.docker.com/): `docker pull darkgaro/kubernetes-reverseproxy`
+2. Download [automated build](https://registry.hub.docker.com/u/darkgaro/kubernetes-reverseproxy/) from public [Docker Hub Registry](https://registry.hub.docker.com/): 
 
-   (alternatively, you can build an image from Dockerfile: `docker build -t="darkgaro/kubernetes-reverseproxy" github.com/darkgaro/kubernetes-reverseproxy`)
+	```docker pull darkgaro/kubernetes-reverseproxy```
+
+   	(alternatively, you can build an image from Dockerfile: 
+   	
+   	`docker build -t="darkgaro/kubernetes-reverseproxy" github.com/darkgaro/kubernetes-reverseproxy`)
 
 
 ### Usage
