@@ -59,6 +59,13 @@ It is used to fill in the nginx "server_name" property.
 
 **kubernetesReverseproxyPort** =  This is the port number for which proxy will listen to.
 
+**kubernetesReverseproxyWebSocket** =  1 | 0  [default 0] This enables websocket support in nginx, it adds to nginx :
+```
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+```
+
 Example kubernetes service:
 
 ```json
