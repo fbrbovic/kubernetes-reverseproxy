@@ -2,9 +2,9 @@ kubernetes-reverseproxy Docker file
 =======================
 
 
-This repository contains **Dockerfile** that acts as reverse proxy for [Kubernetes](https://github.com/GoogleCloudPlatform/kubernetes) allowing you to route http traffic to kubernetes pods which are sharing the same host port. Requests are proxied based on the hostname. 
+This repository contains **Dockerfile** that acts as reverse proxy for [Kubernetes](https://github.com/GoogleCloudPlatform/kubernetes) allowing you to route http traffic to kubernetes pods which are sharing the same host port. Requests are proxied based on the hostname.
 
-This is useful in situations where you might want to run numerous websites on the same node ( with same public ip ). 
+This is useful in situations where you might want to run numerous websites on the same node ( with same public ip ).
 
 This docker image (Dockerfile) uses [nginx](http://nginx.org/) as reverse proxy and [confd](https://github.com/kelseyhightower/confd) as a way to pull the kubernetes 'service' settings and build nginx configuration.
 
@@ -21,12 +21,12 @@ This docker image (Dockerfile) uses [nginx](http://nginx.org/) as reverse proxy 
 
 1. Install [Docker](https://www.docker.com/).
 
-2. Download [automated build](https://registry.hub.docker.com/u/darkgaro/kubernetes-reverseproxy/) from public [Docker Hub Registry](https://registry.hub.docker.com/): 
+2. Download [automated build](https://registry.hub.docker.com/u/darkgaro/kubernetes-reverseproxy/) from public [Docker Hub Registry](https://registry.hub.docker.com/):
 
 	```docker pull darkgaro/kubernetes-reverseproxy```
 
-   	(alternatively, you can build an image from Dockerfile: 
-   	
+   	(alternatively, you can build an image from Dockerfile:
+
    	`docker build -t="darkgaro/kubernetes-reverseproxy" github.com/darkgaro/kubernetes-reverseproxy`)
 
 
@@ -65,6 +65,24 @@ It is used to fill in the nginx "server_name" property.
                 proxy_set_header Upgrade $http_upgrade;
                 proxy_set_header Connection "upgrade";
 ```
+
+**kubernetesReverseproxySsl** = 1 | 0 [default 0] This enables ssl support in nginx
+**kubernetesReverseproxySslCrt** = The SSL certificate file for this service (must be located in /etc/nginx/ssl)
+**kubernetesReverseproxySslKey** = The SSL private key file for this service (must be located in /etc/nginx/ssl)
+
+Theses 3 properties adds to nginx :
+
+```
+								ssl_certificate           /etc/nginx/ssl/cert.crt;
+								ssl_certificate_key       /etc/nginx/ssl/key.key;
+
+								ssl on;
+								ssl_session_cache  builtin:1000  shared:SSL:10m;
+								ssl_protocols  TLSv1 TLSv1.1 TLSv1.2;
+								ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+								ssl_prefer_server_ciphers on;
+```
+
 
 Example kubernetes service:
 
