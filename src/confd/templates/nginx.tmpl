@@ -86,7 +86,13 @@ http {
 						{{if $data.annotations.kubernetesReverseproxySsl   }}
 
 						{{if eq $data.annotations.kubernetesReverseproxySsl "1"  }}
-						proxy_redirect http:// https://;
+
+						{{if $data.annotations.kubernetesReverseproxyPath   }}
+						proxy_redirect http://{{$data.portalIP}}:{{$data.port}}{{$data.annotations.kubernetesReverseproxyPath}} https://{{$data.portalIP}}:{{$data.port}};
+						{{else}}
+						proxy_redirect http://{{$data.portalIP}}:{{$data.port}} https://{{$data.portalIP}}:{{$data.port}};
+						{{end}}
+
 						{{ else }}
 						proxy_redirect off;
 						{{ end }}
