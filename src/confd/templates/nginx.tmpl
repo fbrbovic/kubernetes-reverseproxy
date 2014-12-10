@@ -92,7 +92,7 @@ http {
             proxy_set_header Connection "upgrade";
             {{ end }}
             {{ end }}
-            proxy_pass http://{{$data.portalIP}}:{{$data.port}};
+            proxy_pass http://{{$data.portalIP}}:{{$data.port}}{{$data.annotations.kubernetesReverseproxyPath}};
 	  }
 	}
 	{{ end }}

@@ -83,6 +83,7 @@ Theses 3 properties adds to nginx :
 								ssl_prefer_server_ciphers on;
 ```
 
+**kubernetesReverseproxyPath** = The path to prefix to all requests (ex: /web)
 
 Example kubernetes service:
 
