@@ -83,7 +83,17 @@ http {
             proxy_set_header Host $http_host;
             proxy_set_header X-NginX-Proxy true;
 
-            proxy_redirect off;
+						{{if $data.annotations.kubernetesReverseproxySsl   }}
+
+						{{if eq $data.annotations.kubernetesReverseproxySsl "1"  }}
+						proxy_redirect http:// https://;
+						{{ else }}
+						proxy_redirect off;
+						{{ end }}
+
+						{{ else }}
+						proxy_redirect off;
+						{{ end }}
 
             {{if $data.annotations.kubernetesReverseproxyWebSocket   }}
             {{if eq $data.annotations.kubernetesReverseproxyWebSocket "1"  }}
@@ -92,7 +102,12 @@ http {
             proxy_set_header Connection "upgrade";
             {{ end }}
             {{ end }}
+
+						{{if $data.annotations.kubernetesReverseproxyPath   }}
             proxy_pass http://{{$data.portalIP}}:{{$data.port}}{{$data.annotations.kubernetesReverseproxyPath}};
+						{{else}}
+						proxy_pass http://{{$data.portalIP}}:{{$data.port}};
+						{{end}}
 	  }
 	}
 	{{ end }}
