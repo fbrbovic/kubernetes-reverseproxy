@@ -86,17 +86,7 @@ http {
 			{{if $data.annotations.kubernetesReverseproxySsl   }}
 
 			{{if eq $data.annotations.kubernetesReverseproxySsl "1"  }}
-			<<<<<<< HEAD
 			proxy_redirect http:// https://;
-			=======
-
-			{{if $data.annotations.kubernetesReverseproxyPath   }}
-			proxy_redirect http://{{$data.annotations.kubernetesReverseproxyHost}}:{{$data.annotations.kubernetesReverseproxyPort}}{{$data.annotations.kubernetesReverseproxyPath}} https://{{$data.annotations.kubernetesReverseproxyHost}}:{{$data.annotations.kubernetesReverseproxyPort}};
-			{{else}}
-			proxy_redirect http://{{$data.annotations.kubernetesReverseproxyHost}}:{{$data.annotations.kubernetesReverseproxyPort}} https://{{$data.annotations.kubernetesReverseproxyHost}}:{{$data.annotations.kubernetesReverseproxyPort}};
-			{{end}}
-
-			>>>>>>> e5b97a1ed54607cbf76f50c776dac5252c362332
 			{{ else }}
 			proxy_redirect off;
 			{{ end }}
