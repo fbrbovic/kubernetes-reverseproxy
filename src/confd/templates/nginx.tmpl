@@ -55,7 +55,7 @@ http {
 
 	include /etc/nginx/conf.d/*.conf;
 
-	{{range getvs "/registry/services/specs/default/*"}}
+	{{range getvs "/registry/services/specs/*/*"}}
 	{{$data := json .}}
 	{{if $data.annotations.kubernetesReverseproxyHost }}
 	server {
