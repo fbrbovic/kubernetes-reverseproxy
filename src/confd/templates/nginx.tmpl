@@ -55,18 +55,19 @@ http {
 
 	include /etc/nginx/conf.d/*.conf;
 
-	{{range getvs "/registry/services/specs/*/*"}}
-	{{$data := json .}}
-	{{if $data.annotations.kubernetesReverseproxyHost }}
+	{{range $spec := getvs "/registry/services/specs/*/*"}}
+	{{$data := json $spec}}
+	{{range $proxy := $data.annotations.kubernetesReverseproxy}}
+	{{if $proxy.host }}
 	server {
 
-		{{if $data.annotations.kubernetesReverseproxyPort }} listen {{$data.annotations.kubernetesReverseproxyPort}}; {{end}}
-		server_name {{$data.annotations.kubernetesReverseproxyHost}};
+		{{if $proxy.port }} listen {{$proxy.port}}; {{end}}
+		server_name {{$proxy.host}};
 
-		{{if $data.annotations.kubernetesReverseproxySsl   }}
-		{{if eq $data.annotations.kubernetesReverseproxySsl "1"  }}
-		ssl_certificate           /etc/nginx/ssl/{{$data.annotations.kubernetesReverseproxySslCrt}};
-		ssl_certificate_key       /etc/nginx/ssl/{{$data.annotations.kubernetesReverseproxySslKey}};
+		{{if $proxy.ssl   }}
+		{{if eq $proxy.ssl "1"  }}
+		ssl_certificate           /etc/nginx/ssl/{{$proxy.sslCrt}};
+		ssl_certificate_key       /etc/nginx/ssl/{{$proxy.sslKey}};
 
 		ssl on;
 		ssl_session_cache  builtin:1000  shared:SSL:10m;
@@ -76,16 +77,18 @@ http {
 		{{ end }}
 		{{ end }}
 
-		location {{$data.annotations.kubernetesReverseproxyPath}}/ {
+		{{if $proxy.path }}
+		{{range $path := $proxy.path}}
+		location {{$path}}/ {
 
 			proxy_set_header X-Real-IP $remote_addr;
 			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 			proxy_set_header Host $http_host;
 			proxy_set_header X-NginX-Proxy true;
 
-			{{if $data.annotations.kubernetesReverseproxySsl   }}
+			{{if $proxy.ssl   }}
 
-			{{if eq $data.annotations.kubernetesReverseproxySsl "1"  }}
+			{{if eq $proxy.ssl "1"  }}
 			proxy_redirect http:// https://;
 			{{ else }}
 			proxy_redirect off;
@@ -95,8 +98,8 @@ http {
 			proxy_redirect off;
 			{{ end }}
 
-			{{if $data.annotations.kubernetesReverseproxyWebSocket   }}
-			{{if eq $data.annotations.kubernetesReverseproxyWebSocket "1"  }}
+			{{if $proxy.webSocket   }}
+			{{if eq $proxy.webSocket "1"  }}
 			proxy_http_version 1.1;
 			proxy_set_header Upgrade $http_upgrade;
 			proxy_set_header Connection "upgrade";
@@ -105,14 +108,47 @@ http {
 
 			proxy_pass http://{{$data.portalIP}}:{{$data.port}};
 		}
+		{{ end }}
 
-		{{if $data.annotations.kubernetesReverseproxyPath }}
+		{{ if $proxy.defaultPath}}
 		location / {
-			rewrite ^/$ {{$data.annotations.kubernetesReverseproxyPath}}/ permanent;
+			rewrite ^/$ {{$proxy.defaultPath}}/ permanent;
+		}
+		{{ end }}
+		{{ else }}
+		location / {
+
+			proxy_set_header X-Real-IP $remote_addr;
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header Host $http_host;
+			proxy_set_header X-NginX-Proxy true;
+
+			{{if $proxy.ssl   }}
+
+			{{if eq $proxy.ssl "1"  }}
+			proxy_redirect http:// https://;
+			{{ else }}
+			proxy_redirect off;
+			{{ end }}
+
+			{{ else }}
+			proxy_redirect off;
+			{{ end }}
+
+			{{if $proxy.webSocket   }}
+			{{if eq $proxy.webSocket "1"  }}
+			proxy_http_version 1.1;
+			proxy_set_header Upgrade $http_upgrade;
+			proxy_set_header Connection "upgrade";
+			{{ end }}
+			{{ end }}
+
+			proxy_pass http://{{$data.portalIP}}:{{$data.port}};
 		}
 		{{ end }}
 
 	}
+	{{ end }}
 	{{ end }}
 	{{ end }}
 }
